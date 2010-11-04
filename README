@@ -1,0 +1,42 @@
+ActsAsPopulable
+===============
+
+Introduction goes here.
+
+
+Example
+=======
+
+  class Post < ActiveRecord::Base
+  
+    acts_as_populable :ranking, :calucurate_score
+    acts_as_populable :weekly_ranking, :calucurate_weekly_score
+    acts_as_populable :monthly_ranking, :calucurate_monthly_score
+    
+    has_many :comments
+    has_many :access_logs
+    
+    protected
+    
+      def calucurate_score(options={})
+        return self.comments.count + self.access_logs.count
+      end
+  
+      def calucurate_weekly_score(options={})
+        time_range = (1.week.ago(options[:start_at]))..(options[:start_at])
+        return self.comments.wehere(:created_at => time_range).count + self.access_logs.wehere(:created_at => time_range).count
+      end
+  
+      def calucurate_monthly_score(options={})
+        time_range = (1.month.ago(options[:start_at]))..(options[:start_at])
+        return self.comments.wehere(:created_at => time_range).count + self.access_logs.wehere(:created_at => time_range).count
+      end
+  
+  end
+
+Post.popluar(:ranking_name)
+
+Example goes here.
+
+
+Copyright (c) 2010 [name of plugin creator], released under the MIT license
